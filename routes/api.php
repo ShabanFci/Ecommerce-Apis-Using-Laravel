@@ -2,28 +2,18 @@
 
 use Illuminate\Http\Request;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
+Route::group(['middleware' => ['web']], function () {
+	Auth::routes();
+	Route::get('logout', '\App\Http\Controllers\Auth\LoginController@logout')->name('logout');
+    Route::get('/' , 'UserController@userarea');
+});
 
 
-
-Route::post('login', 'UserController@login');
-Route::post('register', 'UserController@register');
-
-Route::group(['middleware' => 'auth:api'], function(){
-        
+Route::group(['middleware' => ['web','api' , 'auth' , 'admin']], function(){
+    Route::get('/home', 'HomeController@index')->name('home');  
     Route::resource('/categories', 'CategoryController');
     Route::resource('/subCategories', 'SubcategoryController');
     Route::resource('/products', 'ProductController');
-    Route::get('/categoryProducts/{category}' , 'CategoryController@categoryProducts');
-    Route::get('/categorySubcategories/{category}' , 'CategoryController@categorySubcategories');
-
+    Route::get('/categoryProducts/{category}' , 'CategoryController@categoryProducts')->name('categoryProducts');  
 });
+Route::get('/categorySubcategories' , 'CategoryController@categorySubcategories')->name('categorySubcategories');

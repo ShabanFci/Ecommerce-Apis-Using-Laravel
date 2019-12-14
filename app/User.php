@@ -13,7 +13,7 @@
          use Notifiable, SoftDeletes, HasApiTokens;
 
         protected $fillable = [
-            'name', 'password', 'is_admin'
+            'username', 'password', 'is_admin'
         ];
 
         protected $hidden = [

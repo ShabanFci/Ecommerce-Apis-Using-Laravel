@@ -3,14 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Category;
+use App\Subcategory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Input;
 
 class CategoryController extends Controller
 {
    /* Return all categories */
    public function index()
    {
-        return response()->json(Category::all(),200);
+        $categories = Category::orderBy('id','DESC')->paginate(5);
+        return view('admin.categories.index' , compact('categories'));
+   }
+
+   public function create()
+   {
+        return view('admin.categories.create');
    }
 
    /* used to add new category */
@@ -20,10 +29,19 @@ class CategoryController extends Controller
             'name' => $request->name      
         ]);
 
-        return response()->json([
+         response()->json([
             'data'   => $category,
             'message' => $category ? 'Category Created!' : 'Error Creating Category'
         ]);
+
+        
+        $categories = Category::orderBy('id','DESC')->paginate(5);
+        return view('admin.categories.index' , compact('categories'));
+    }
+
+    public function edit(Category $category)
+    {
+        return view('admin.categories.edit' ,compact('category'));
     }
 
     /* used to get a specific category */
@@ -39,10 +57,13 @@ class CategoryController extends Controller
             $request->only(['name'])
         );
 
-        return response()->json([
+         response()->json([
             'status' => $status,
             'message' => $status ? 'Category Updated!' : 'Error Updating Category'
         ]);
+
+        $categories = Category::orderBy('id','DESC')->paginate(5);
+        return view('admin.categories.index' , compact('categories'));
     }
 
     /* used to delete a specific category */
@@ -50,10 +71,13 @@ class CategoryController extends Controller
     {
         $status = $category->delete();
 
-        return response()->json([
+         response()->json([
             'status' => $status,
             'message' => $status ? 'Category Deleted!' : 'Error Deleting Category'
         ]);
+
+        $categories = Category::orderBy('id','DESC')->paginate(5);
+        return view('admin.categories.index' , compact('categories'));
     }
 
     /* Return all products belongs to a specific category */
@@ -68,13 +92,12 @@ class CategoryController extends Controller
     }
 
     /* Return all subCategories of a specific category */
-    public function categorySubcategories(Category $category)
+    public function categorySubcategories(Request $request)
     {
-        $categorySubcategories = $category->subCategories()->get();
-        return response()->json([
-            'data'   => $categorySubcategories,
-            'message' => 'subCategories of this category'
-        ]);
+        $category_id = $request->get('category_id');
+    $subcategories = Category::find($category_id)->subCategories;
+
+    return Response::json($subcategories);
 
     }
 

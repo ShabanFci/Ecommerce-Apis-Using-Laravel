@@ -21,9 +21,13 @@ class UserController extends Controller
                 'user' => Auth::user(),
                 'token' => Auth::user()->createToken('userToken')->accessToken,
                 ];
+
+
+            return view('admin.home');
+                
         }
 
-        return response()->json($response, $status);
+        return response()->json($status , $response);    
     }
 
     /* Register Api */
@@ -41,13 +45,18 @@ class UserController extends Controller
 
         $data = $request->only(['name','password']);
         $data['password'] = bcrypt($data['password']);
-
-        $user = User::create($data);
-           
-        return response()->json([
+        $user = User::create($data);    
+        response()->json([
             'user' => $user,
             'token' => $user->createToken('userToken')->accessToken,
             ]);
+        return view('admin.home');
+    }
+
+    public function userarea()
+    {
+        
+        return view('user.userarea');
     }
 
 }
